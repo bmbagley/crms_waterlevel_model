@@ -1,0 +1,87 @@
+---
+title: "CRIMS and CIMS Water Level Data Analysis"
+output: pdf
+---
+```{r setup}
+library(plyr)
+library(dplyr)
+library(reshape2)
+library(ggplot2)
+library(tools)
+library(knitr)
+opts_chunk$set(root.dir = '../../')
+```
+
+
+```{r}
+data_location <- file.path("/Users/brandon.bagley/repos/crms_waterlevel_model",'data')
+data_raw_location <- file.path(data_location, 'raw')
+data_refined_location <- file.path(data_location, 'refined')
+```
+
+Read in files for land cover
+```{r}
+zipped_csv_download <- function(url, dest){
+  filename <-  basename(url)
+  local_file <- file.path(dest,filename)
+  if(!file.exists(local_file)){
+    print('Downloading File')
+    dir.create(dest, showWarnings = FALSE)
+    res <- tryCatch(download.file(url,
+                                  destfile=local_file,
+                                  method="libcurl",
+                                  mode = 'wb'),
+                    error=function(e) 1)
+    files <- unzip(local_file, list=TRUE)
+    # unzip(local_file,exdir = dest, junkpaths=TRUE) # Unreliable, does not unzip properly
+    # Manually Unzip here
+    return(files)
+  } else {
+    print('File already downloaded')
+    return(unzip(local_file, list=TRUE))
+  }
+}
+crms_4529_hourly_url = 'http://cims.coastal.louisiana.gov/RequestedDownloads/ZippedFiles/282386C7BF074DF09F1DD64C88F9F48C.zip'
+a <- zipped_csv_download(crms_4529_hourly_url, data_raw_location)
+print(a)
+```
+
+```{r functions}
+read_crms <- function(filename, file_location){
+  filenam <- file.path(file_location, filename)
+  
+}
+```
+
+
+```{r}
+cims_filename <- file.path(data_raw_location, a$Name)
+
+temp <- read.csv(cims_filename, header = T, strip.white = T, stringsAsFactors = F, check.names = F)
+colnames(temp) <- tolower(gsub('[^A-Za-z1-9,]+','_',colnames(temp)))
+head(temp)
+
+```
+
+
+
+```{r}
+temp <- read.csv(file.path(data_raw_location,'8102.csv'), header = TRUE,
+                 format='%m/%d/%Y %H:%M:%S %p')
+head(temp)
+# ggplot(temp, mapping = aes())
+# coords = read.csv(file.path(data_raw_location,))
+```
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+# plot(cars)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
